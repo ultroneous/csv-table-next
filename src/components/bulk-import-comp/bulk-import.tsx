@@ -6,6 +6,8 @@ import FileIcon from "@components/common/icons/file-icon";
 import OptionIcon from "@components/common/icons/option-icon";
 import { maxSize, validFiles } from "@utils/constant";
 import { BulkImportComponentProps } from "@utils/types";
+import { showToastMessage } from "@components/common/toaster";
+import { alertMsg } from "@utils/constant";
 
 export default function BulkImportComponent({
   handleBack,
@@ -55,9 +57,21 @@ export default function BulkImportComponent({
                   if (e.target.files?.[0]) {
                     const tempFile = e.target?.files?.[0];
                     if (!validFiles.includes(tempFile.type)) {
+                      showToastMessage(alertMsg.invalidFile, {
+                        color: "error",
+                      });
                       return;
                     }
-                    if (tempFile.size === 0 || tempFile.size > maxSize) {
+                    if (tempFile.size > maxSize) {
+                      showToastMessage(alertMsg.maxSize, {
+                        color: "error",
+                      });
+                      return;
+                    }
+                    if (tempFile.size === 0) {
+                      showToastMessage(alertMsg.emptyFile, {
+                        color: "error",
+                      });
                       return;
                     }
                     const blob = tempFile.slice(0, tempFile.size);

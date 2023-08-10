@@ -6,6 +6,8 @@ import Image from "next/image";
 import Backward from "@components/common/icons/back-arrow";
 import { useCardsData } from "@store/store";
 import { parseCSV } from "@utils/helper";
+import { showToastMessage } from "@components/common/toaster";
+import { alertMsg } from "@utils/constant";
 
 const GotoMyCards = dynamic(() => import("./go-to-my-card"), {
   ssr: false,
@@ -27,6 +29,7 @@ export default function CsvImportComponent() {
 
   const handleCsvData = async () => {
     if (!csvFile) {
+      showToastMessage(alertMsg.emptyUpload, { color: "error" });
       return;
     }
     const rowsArray: any[] = [];
