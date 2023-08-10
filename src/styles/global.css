@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background-secondary:#F8F9FB;
+  --background-default: #FFF;
+  --background-primary:#2C71F6;
+}
