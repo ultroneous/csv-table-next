@@ -4,10 +4,9 @@ import Link from "next/link";
 import Button from "@components/common/button";
 import FileIcon from "@components/common/icons/file-icon";
 import OptionIcon from "@components/common/icons/option-icon";
-import { maxSize, validFiles } from "@utils/constant";
+import { alertMsg, maxSize, validFiles } from "@utils/constant";
 import { BulkImportComponentProps } from "@utils/types";
 import { showToastMessage } from "@components/common/toaster";
-import { alertMsg } from "@utils/constant";
 
 export default function BulkImportComponent({
   handleBack,
