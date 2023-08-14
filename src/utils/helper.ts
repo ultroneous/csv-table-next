@@ -1,9 +1,6 @@
 import Papa from "papaparse";
-
-interface ParseResult<T> {
-  data: T[];
-  errors: Papa.ParseError[];
-}
+import { CardDataModel, ParseResult } from "./types";
+import { verification } from "./constant";
 
 export async function parseCSV<T>(csvString: File): Promise<ParseResult<T>> {
   return new Promise((resolve) => {
@@ -20,5 +17,18 @@ export async function parseCSV<T>(csvString: File): Promise<ParseResult<T>> {
     });
   });
 }
+
 export const isObjectEmpty = (objectName: any) =>
   JSON.stringify(objectName) === "{}";
+
+export const verifiedAllFields = (obj: CardDataModel) => {
+  const data = Object.entries(obj);
+  let error = verification[0];
+  data.map((data) => {
+    if (data[0] !== "id" && !data[1]) {
+      error = verification[1];
+      return;
+    }
+  });
+  return error;
+};

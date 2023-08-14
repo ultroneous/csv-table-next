@@ -5,7 +5,7 @@ import Image from "next/image";
 
 import Backward from "@components/common/icons/back-arrow";
 import { useCardsData } from "@store/store";
-import { parseCSV } from "@utils/helper";
+import { parseCSV, verifiedAllFields } from "@utils/helper";
 import { showToastMessage } from "@components/common/toaster";
 import { alertMsg } from "@utils/constant";
 
@@ -22,7 +22,7 @@ const BulkImportComponent = dynamic(() => import("./bulk-import"), {
 export default function CsvImportComponent() {
   const { back } = useRouter();
 
-  const setCards = useCardsData((state) => state.setCards);
+  const addCards = useCardsData((state) => state.addCards);
 
   const [activeStep, setActiveStep] = useState<number>(0);
   const [csvFile, setCsvFile] = useState<File>();
@@ -39,14 +39,24 @@ export default function CsvImportComponent() {
 
     result.data.map((d: any, i: number) => {
       rowsArray.push(Object.keys(d));
-      value.push({ id: i, ...d });
+      const finalObj = {
+        id: i,
+        name: d["Full name"],
+        company: d["Company"],
+        email: d["Email"],
+        role: d["Role"],
+        title: d["Title"],
+      };
+
+      const status = verifiedAllFields(finalObj);
+      value.push({ ...finalObj, status });
     });
 
     rowsArray[0].map((val: string) => {
       titles.push(val.toLowerCase().replaceAll(" ", ""));
     });
 
-    setCards(value);
+    addCards(value);
 
     setActiveStep(1);
   };

@@ -5,7 +5,7 @@ import VerifiedContainedIcon from "@components/common/icons/verified-contained";
 import { CardProps } from "@utils/types";
 
 export default function Card({ value }: CardProps) {
-  const profileText = value?.["Full name"]
+  const profileText = value?.["name"]
     ?.split(" ")
     .reduce((acc: string, val: string) => `${acc} ${val[0]}`, "");
   return (
@@ -27,8 +27,8 @@ export default function Card({ value }: CardProps) {
         </p>
       </div>
       <div className="text-center">
-        <p>{value?.["Full name"]}</p>
-        <p>@{value?.["Full name"]?.toLowerCase().replaceAll(" ", "")}</p>
+        <p>{value?.name}</p>
+        <p>@{value?.name?.toLowerCase().replaceAll(" ", "")}</p>
       </div>
       <div className="flex gap-x-2">
         <Identification width={24} height={24} />

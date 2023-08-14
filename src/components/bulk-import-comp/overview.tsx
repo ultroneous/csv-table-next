@@ -1,24 +1,68 @@
 import Button from "@components/common/button";
-import DeleteIcon from "@components/common/icons/delete-icon";
-import EditIcon from "@components/common/icons/edit-icon";
-import VerifiedIcon from "@components/common/icons/verified-icon";
 import { useCardsData } from "@store/store";
-import { overviewTableHeaders } from "@utils/constant";
+import {
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
 import { OverviewProps } from "@utils/types";
+import { useEffect, useState } from "react";
+import { columns } from "@components/common/table/columns";
 
 export default function Overview({ setActiveStep, handleBack }: OverviewProps) {
-  const tableValues = useCardsData((state) => state.cards);
-  const removeCard = useCardsData((state) => state.removeCard);
+  const [tableValues, setCards] = useCardsData((state) => [
+    state.cards,
+    state.setCards,
+  ]);
+
+  const [data, setData] = useState(() => [...tableValues]);
+  const [originalData, setOriginalData] = useState(() => [...tableValues]);
+  const [editedRows, setEditedRows] = useState({});
+
+  useEffect(() => {
+    setData(tableValues);
+  }, [tableValues]);
 
   const handleTableData = () => {
+    setCards(data);
     setActiveStep(2);
   };
 
-  const handleDelete = (index: number) => {
-    const tmpArray = [...tableValues];
-    tmpArray.splice(index, 1);
-    removeCard(tmpArray);
-  };
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    meta: {
+      editedRows,
+      setEditedRows,
+      revertData: (rowIndex: number, revert: boolean) => {
+        if (revert) {
+          setData((old) =>
+            old.map((row, index) =>
+              index === rowIndex ? originalData[rowIndex] : row
+            )
+          );
+        } else {
+          setOriginalData((old) =>
+            old.map((row, index) => (index === rowIndex ? data[rowIndex] : row))
+          );
+        }
+      },
+      updateData: (rowIndex: number, columnId: string, value: string) => {
+        setData((old) =>
+          old.map((row, index) => {
+            if (index === rowIndex) {
+              return {
+                ...old[rowIndex],
+                [columnId]: value,
+              };
+            }
+            return row;
+          })
+        );
+      },
+    },
+  });
 
   return (
     <>
@@ -28,39 +72,37 @@ export default function Overview({ setActiveStep, handleBack }: OverviewProps) {
       </div>
       <div className="max-h-96 relative overflow-y-auto shadow-md rounded-lg ">
         {tableValues.length > 0 ? (
-          <table className="w-full text-left ">
+          <table className="w-full text-left">
             <thead className="sticky top-0 right-0 text-sm font-normal text-secondary-typography bg-secondary">
-              <tr>
-                {overviewTableHeaders.map((val) => (
-                  <th key={val} className="px-6 py-3" scope="col">
-                    {val}
-                  </th>
-                ))}
-              </tr>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <tr key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => (
+                    <th key={header.id} className="px-6 py-3" scope="col">
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                    </th>
+                  ))}
+                </tr>
+              ))}
             </thead>
             <tbody className="overflow-auto bg-white">
-              {tableValues.map((val, index) => (
-                <tr key={val?.["id"]} className="border-b">
-                  <td className="px-6 py-6 whitespace-nowrap text-sm">
-                    {val?.["Full name"]}
-                  </td>
-                  <td className="px-6 py-6 text-sm">{val?.["Email"]}</td>
-                  <td className="px-6 py-6 text-sm text-primary-typography">
-                    {val?.["Company"]}
-                  </td>
-                  <td className="px-6 py-6 text-sm">{val?.["Title"]}</td>
-                  <td className="px-6 py-6 text-sm">{val?.["Role"]}</td>
-                  <td className="px-6 py-6 text-sm">
-                    <VerifiedIcon width={21} height={21} />
-                  </td>
-                  <td className="py-6 text-sm text-primary-typography flex gap-x-6">
-                    <button className="text-center">
-                      <EditIcon width={20} height={20} />
-                    </button>
-                    <button onClick={() => handleDelete(index)}>
-                      <DeleteIcon width={20} height={20} />
-                    </button>
-                  </td>
+              {table.getRowModel().rows.map((row) => (
+                <tr key={row.id} className="border-b">
+                  {row.getVisibleCells().map((cell) => (
+                    <td
+                      key={cell.id}
+                      className="px-6 py-6 whitespace-nowrap text-sm"
+                    >
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </td>
+                  ))}
                 </tr>
               ))}
             </tbody>

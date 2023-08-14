@@ -19,7 +19,8 @@ export interface CardsInitialState {
 export interface CardStoreType extends CardsInitialState {
   setCards: (payload: CardDataModel[]) => void;
   setTableTitle: (payload: string[]) => void;
-  removeCard: (payload: CardDataModel[]) => void;
+  addCards: (payload: CardDataModel[]) => void;
+  removeCard: (id: number) => void;
 }
 
 export interface BulkImportComponentProps {
@@ -34,11 +35,12 @@ export interface OverviewProps {
   handleBack: () => void;
 }
 export interface CardDataModel {
-  Company: string;
-  Email: string;
-  "Full name": string;
-  Role: string;
-  Title: string;
+  company: string;
+  email: string;
+  name: string;
+  role: string;
+  title: string;
+  status?: "verified" | "unverified";
   id: number;
 }
 
@@ -48,4 +50,14 @@ export interface CardsProps {
 
 export interface CardProps {
   value: CardDataModel;
+}
+
+export interface Option {
+  label: string;
+  value: string;
+}
+
+export interface ParseResult<T> {
+  data: T[];
+  errors: Papa.ParseError[];
 }

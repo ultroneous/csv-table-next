@@ -17,3 +17,6 @@ export const alertMsg = {
   invalidFile: "Upload CSV file only",
   emptyUpload: "Select file before uploading",
 };
+
+export const verification = ["verified", "unverified"];
+

@@ -13,14 +13,23 @@ export const useCardsData = create<CardStoreType>((set) => ({
       ...state,
       tableTitle: payload,
     })),
-  setCards: (payload) =>
+  addCards: (payload) =>
     set((state) => ({
       ...state,
       cards: [...state.cards, ...payload],
     })),
-  removeCard: (payload) =>
+  setCards: (payload) =>
     set((state) => ({
       ...state,
       cards: [...payload],
     })),
+  removeCard: (id: number) =>
+    set((state) => {
+      const tmpArray = [...state.cards];
+      tmpArray.splice(Number(id), 1);
+      return {
+        ...state,
+        cards: [...tmpArray],
+      };
+    }),
 }));
